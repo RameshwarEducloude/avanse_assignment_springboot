@@ -246,8 +246,37 @@ function showError(errorMessage){
 	});
 }
 
-function fillConsentInfo(){
-// get info from fields and pass that data into one url to redirect other page
-let date = new Date($("#dob").val()).getTime();
-    window.open(`localhost:8080/confirmconsent/${$("#name").val()}/${$("#lan").val()}/${date}/1`, "_blank");
+async function acceptAgreementAndSave(){
+
+	const isServerAvailable = true ; // This variable help to not to make BE call this the time it get available
+	const isChecked = $("#agreeTermAndCond").is(":checked");
+	if(isChecked){
+		let userData = getFromDateFromFields();
+		if(isServerAvailable){
+			let responseObject = await saveConsentDataAjax(userData);
+			if(responseObject && responseObject.status == true){
+				downloadPDF(userData);
+			}else{
+				showError(responseObject.errorMessage);
+			}
+		}else{
+			downloadPDF(userData);
+		}
+	}
+}
+
+function getFromDateFromFields(){
+let userInfo = {
+		name : $(`#userName`).html(),
+		birthDate : $(`#userDob`).html(),
+		lan : $(`#userLan`).html(),
+		date : $(`#consentDate`).html(),
+		consentVersion : $(`#consentVersion`).val()
+	}
+	return userInfo;
+}
+
+function initStep2(){
+    $(`#wizrd_1_pro`).removeClass(`active_wizrd`).addClass('completed');
+	$(`#wizrd_2_pro`).addClass(`active_wizrd`);
 }

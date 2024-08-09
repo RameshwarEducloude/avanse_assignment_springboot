@@ -13,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 
 @Controller
@@ -22,61 +21,70 @@ public class ConsentController {
     @Autowired
     ConsentService consentService;
 
+    /*
+        This controller  use for Single-page solution
+     */
     @GetMapping("/")
     public String goForUserConsent() {
-        return "consentpage";
+        return "consentSinglepage";
+    }
+
+    /*
+        This controller  use for Two-page solution by using Thymeleaf
+    */
+    @GetMapping("/consentformpage")
+    public String fillConsentInfoPage() {
+        return "consentFormPage";
     }
 
     @PostMapping("/saveconsent")
-    public void saveConsent(@RequestBody UserConsentReqObj userConsentReqObj, HttpServletResponse response) throws IOException {
-        JSONObject jsonObject = new JSONObject();
+    public void saveConsent(@RequestBody UserConsentReqObj requestObject, HttpServletResponse response) throws IOException {
+        JSONObject responseObject = new JSONObject();
         try {
-            if (StringUtils.hasText(userConsentReqObj.getName()) && userConsentReqObj.getBirthDate() != null
-                    && userConsentReqObj.getLan() != null) {
-                UserConsent userConsent = UserConsentReqObj.toConsent(userConsentReqObj);
-                UserConsentResObj resObj = consentService.saveUserConsent(userConsent);
-                jsonObject.put(CommonConstants.STATUS, true);
-                jsonObject.put(CommonConstants.DATA, JSONObject.fromObject(resObj));
+            if (StringUtils.hasText(requestObject.getName()) && requestObject.getBirthDate() != null && requestObject.getLan() != null) {
+                // convert request object to entity
+                UserConsent userConsent = UserConsentReqObj.toConsent(requestObject);
+                // save entity in database
+                consentService.saveUserConsent(userConsent);
+                // convert updated entity into response Object
+                UserConsentResObj resObj = UserConsent.toConsentResponseObj(userConsent);
+                // pass resObject into json to send UI
+                responseObject.put(CommonConstants.STATUS, true);
+                responseObject.put(CommonConstants.DATA, JSONObject.fromObject(resObj));
             } else {
-                jsonObject.put(CommonConstants.STATUS, false);
-                jsonObject.put(CommonConstants.ERROR_MESSAGE, CommonConstants.PARAMETERS_ARE_MISSING);
+                responseObject.put(CommonConstants.STATUS, false);
+                responseObject.put(CommonConstants.ERROR_MESSAGE, CommonConstants.PARAMETERS_ARE_MISSING);
             }
         } catch (Exception e) {
             e.fillInStackTrace();
-            jsonObject.put(CommonConstants.STATUS, false);
-            jsonObject.put(CommonConstants.ERROR_MESSAGE, e.getMessage());
+            responseObject.put(CommonConstants.STATUS, false);
+            responseObject.put(CommonConstants.ERROR_MESSAGE, e.getMessage());
         }
-        CommonUtility.writeDataInResponse(response, jsonObject.toString());
+        CommonUtility.writeDataInResponse(response, responseObject.toString());
     }
 
 
-    @GetMapping("/fillconsentinfo")
-    public String fillConsentInfoPage(Model model) {
-//        model.addAttribute(CommonConstants.ERROR_MESSAGE , "Error message for testing");
-        return "fillConsentInfo";
-    }
-
+    /*
+        This controller use for Two-page solution by using Thymeleaf
+        Forward to second page
+    */
     @PostMapping("/confirmconsent")
-    public String confirmConsent(@ModelAttribute UserConsentReqObj consentReqObj, Model model) {
+    public String confirmConsent(@ModelAttribute UserConsentReqObj requestObject, Model responceModel) {
         try {
-            if (StringUtils.hasText(consentReqObj.getName()) && consentReqObj.getBirthDate() != null
-                    && consentReqObj.getLan() != 0) {
-                UserConsentResObj userConsentResObj = UserConsentResObj.prepareReqToResponse(consentReqObj);
-
-                model.addAttribute("userConsent", userConsentResObj);
+            if (StringUtils.hasText(requestObject.getName()) && StringUtils.hasText(requestObject.getBirthDate()) && StringUtils.hasText(requestObject.getLan()) && StringUtils.hasText(requestObject.getConsentVersion())) {
+                // Here converting Request object to response object
+                UserConsentResObj responseObject = requestObject.toResponce(requestObject);
+                responceModel.addAttribute("userConsent", responseObject);
 
             } else {
-                model.addAttribute(CommonConstants.ERROR_MESSAGE, CommonConstants.PARAMETERS_ARE_MISSING);
-                return "fillConsentInfo";
+                responceModel.addAttribute(CommonConstants.ERROR_MESSAGE, CommonConstants.PARAMETERS_ARE_MISSING);
+                return "consentFormPage";
             }
-
         } catch (Exception e) {
-            model.addAttribute(CommonConstants.ERROR_MESSAGE, e.getMessage());
-            return "fillConsentInfo";
+            responceModel.addAttribute(CommonConstants.ERROR_MESSAGE, e.getMessage());
+            return "consentFormPage";
         }
-
         return "confirmConsent";
     }
-
 
 }

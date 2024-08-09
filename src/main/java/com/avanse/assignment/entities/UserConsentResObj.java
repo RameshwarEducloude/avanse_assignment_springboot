@@ -13,15 +13,17 @@ public class UserConsentResObj {
 
     private Long id;
     private String name;
-    private Long birthDate;
-    private Long lan;
-    private int consentVersion;
+    private String birthDate;
+    private String lan;
+    private String consentVersion;
+    private String date;
 
-    public static UserConsentResObj prepareReqToResponse(UserConsentReqObj consentReqObj){
+    public static UserConsentResObj prepareReqToResponse1(UserConsentReqObj consentReqObj){
         return UserConsentResObj.builder()
                 .name(consentReqObj.getName())
                 .lan(consentReqObj.getLan())
                 .birthDate(consentReqObj.getBirthDate())
+                .date(consentReqObj.getDate())
                 .consentVersion(consentReqObj.getConsentVersion()).build();
     }
 }

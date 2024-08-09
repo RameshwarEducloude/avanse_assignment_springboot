@@ -17,9 +17,10 @@ public class UserConsent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private Long birthDate;
-    private Long lan;
-    private int consentVersion;
+    private String birthDate;
+    private String lan;
+    private String consentVersion;
+    private String date;
 
     public static UserConsentResObj toConsentResponseObj(UserConsent userConsent){
         return UserConsentResObj
@@ -27,6 +28,7 @@ public class UserConsent {
                 .name(userConsent.getName())
                 .lan(userConsent.getLan())
                 .birthDate(userConsent.getBirthDate())
+                .date(userConsent.getDate())
                 .consentVersion(userConsent.getConsentVersion()).build();
     }
 }

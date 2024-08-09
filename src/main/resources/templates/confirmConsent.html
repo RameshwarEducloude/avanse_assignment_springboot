@@ -20,12 +20,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
-
         // This is main on ready event
         $(document).ready(function (){
-
             // here all events
+
             initEvents();
+
+            initStep2();
         });
     </script>
 <body>
@@ -60,6 +61,7 @@
                         <b> Co – Lending Arrangement</b><br>
                         <b> Co-Lending</b>
                         <i>
+                            <input type="text" id="consentVersion" style="display:none" value="v.1">
                             <ol style="list-style-type: upper-alpha;">
                                 <li>Borrower(s) hereby agree and acknowledge that the Lender may enter/has entered into
                                     a co-lending arrangement with certain
@@ -143,19 +145,19 @@
                         <table>
                             <tr>
                                 <td><b>Name</b></td>
-                                <td>: &nbsp;&nbsp;<span id="userName">-</span></td>
+                                <td>: &nbsp;&nbsp;<span id="userName" th:text="${userConsent.name}">-</span></td>
                             </tr>
                             <tr>
                                 <td><b>Date of birth</b></td>
-                                <td>: &nbsp;&nbsp;<span id="userDob">-</span></td>
+                                <td>: &nbsp;&nbsp;<span id="userDob" th:text="${userConsent.birthDate}">-</span></td>
                             </tr>
                             <tr>
                                 <td><b>LAN</b></td>
-                                <td>: &nbsp;&nbsp;<span id="userLan">-</span></td>
+                                <td>: &nbsp;&nbsp;<span id="userLan" th:text="${userConsent.lan}">-</span></td>
                             </tr>
                             <tr>
                                 <td><b>Date </b></td>
-                                <td>: &nbsp;&nbsp;<span id="consentDate">-</span></td>
+                                <td>: &nbsp;&nbsp;<span id="consentDate" th:text="${#calendars.format(#calendars.createNow(), 'dd MMM yyyy HH:mm')}">-</span></td>
                             </tr>
                         </table>
                     </div>
@@ -171,7 +173,7 @@
 
                 </div>
                 <div class="d-flex flex-column align-items-center justify-content-center mt-1 gap-2">
-                    <button id="continue-btn" class="btn btn-success" onclick="acceptAgreement()">Confirm Consent
+                    <button id="continue-btn" class="btn btn-success" onclick="acceptAgreementAndSave()">Confirm Consent
                     </button>
                 </div>
             </div>

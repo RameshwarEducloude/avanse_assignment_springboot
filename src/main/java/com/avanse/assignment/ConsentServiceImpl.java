@@ -12,9 +12,9 @@ public class ConsentServiceImpl implements ConsentService{
     ConsentRepository consentRepository;
 
     @Override
-    public UserConsentResObj saveUserConsent(UserConsent userConsent) {
+    public UserConsent saveUserConsent(UserConsent userConsent) {
         consentRepository.save(userConsent);
-        return UserConsent.toConsentResponseObj(userConsent);
+        return userConsent;
     }
 
 

@@ -5,5 +5,5 @@ import com.avanse.assignment.entities.UserConsentResObj;
 
 public interface ConsentService {
 
-    UserConsentResObj saveUserConsent(UserConsent userConsent);
+    UserConsent saveUserConsent(UserConsent userConsent);
 }
