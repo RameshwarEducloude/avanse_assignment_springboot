@@ -249,5 +249,5 @@ function showError(errorMessage){
 function fillConsentInfo(){
 // get info from fields and pass that data into one url to redirect other page
 let date = new Date($("#dob").val()).getTime();
-    window.location.href(`localhost:8080/confirmconsent/${$("#name").val()}/${$("#lan").val()}/${date}/1`, "_blank");
+    window.open(`localhost:8080/confirmconsent/${$("#name").val()}/${$("#lan").val()}/${date}/1`, "_blank");
 }

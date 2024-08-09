@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -59,17 +56,12 @@ public class ConsentController {
         return "fillConsentInfo";
     }
 
-    @GetMapping("/confirmconsent/{userName}/{lan}/{birthDate}/{consentVersion}")
-    public String confirmConsent(@PathVariable String userName, @PathVariable long lan,
-                                 @PathVariable Long birthDate, @PathVariable int consentVersion, Model model) {
+    @PostMapping("/confirmconsent")
+    public String confirmConsent(@ModelAttribute UserConsentReqObj consentReqObj, Model model) {
         try {
-            if (StringUtils.hasText(userName) && birthDate != null
-                    && lan != 0 && consentVersion != 0) {
-                UserConsentResObj userConsentResObj = new UserConsentResObj();
-                userConsentResObj.setName(userName);
-                userConsentResObj.setBirthDate(birthDate);
-                userConsentResObj.setLan(lan);
-                userConsentResObj.setConsentVersion(consentVersion);
+            if (StringUtils.hasText(consentReqObj.getName()) && consentReqObj.getBirthDate() != null
+                    && consentReqObj.getLan() != 0) {
+                UserConsentResObj userConsentResObj = UserConsentResObj.prepareReqToResponse(consentReqObj);
 
                 model.addAttribute("userConsent", userConsentResObj);
 
