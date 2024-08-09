@@ -88,7 +88,7 @@ function fillUserInfoInConsentPage(userInfo) {
 	let today = new Date();
 	const formattedDate = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(today);
 	$("#userName").html(userInfo.name);
-	$("#userDob").html(userInfo.dateOfBirth);
+	$("#userDob").html(userInfo.birthDate);
 	$("#userLan").html(userInfo.lan);
 	$("#consentDate").html(formattedDate);
 }
@@ -98,12 +98,13 @@ function fillUserInfoInConsentPage(userInfo) {
  */
 async function acceptAgreement(){
 
-	const isServerAvailable = false ; // This variable help to not to make BE call this the time it get available 
+	const isServerAvailable = true ; // This variable help to not to make BE call this the time it get available
 	const isChecked = $("#agreeTermAndCond").is(":checked");
 	if(isChecked){
 
 		let userData = getCustomerFormData();
 		if(isServerAvailable){
+		    userData.birthDate = new Date(userData.birthDate).getTime();
 			let responseObject = await saveConsentDataAjax(userData); 
 			if(responseObject && responseObject.status == true){
 				downloadPDF(userData);
@@ -202,8 +203,9 @@ async function downloadPDF(userData){
 function getCustomerFormData(){
 	let userInfo = {
 		name : $(`#name`).val(),
-		dateOfBirth : $(`#dob`).val(),
-		lan : $(`#lan`).val()
+		birthDate : $(`#dob`).val(),
+		lan : $(`#lan`).val(),
+		consentVersion : 1
 	}
 
 	return userInfo;
@@ -217,8 +219,9 @@ async function saveConsentDataAjax(userData){
 	let responseObject;
 	await $.ajax({
         type : "POST",
-        url : YOUR_URL,
-		data: userData,
+        url : "/saveconsent",
+		data: JSON.stringify(userData),
+        contentType: "application/json",
         error : function(response, error, thrownError) {
             displayError(response, error, thrownError);
         },
