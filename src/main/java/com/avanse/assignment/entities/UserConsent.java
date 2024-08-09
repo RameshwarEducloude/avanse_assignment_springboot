@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class UserConsent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private Long birthDate;
